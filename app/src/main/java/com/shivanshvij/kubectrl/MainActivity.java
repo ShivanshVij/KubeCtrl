@@ -100,55 +100,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         simpleList.setAdapter(arrayAdapter);
     }
 
-//    public static JSONObject admissionregistration() {
-//        ApiClient defaultClient = Configuration.getDefaultApiClient();
-//        defaultClient.setVerifyingSsl(false);
-//
-////        SSLContext sslContext = SslUtils.getSslContextForCertificateFile("BPClass2RootCA-sha2.cer");
-////        defaultClient.getHttpClient().setSslSocketFactory(sslContext.getSocketFactory());
-//
-//        defaultClient.setBasePath("https://cbeaf424-708d-49b6-a9b6-d88a7e6a3292.k8s.ondigitalocean.com");
-//
-//        // Configure API key authorization: BearerToken
-//        ApiKeyAuth BearerToken = (ApiKeyAuth) defaultClient.getAuthentication("BearerToken");
-//        BearerToken.setApiKey("eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLXhreDQ4Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI0MGQyNDFjYi02OTJhLTExZTktODE4Mi0zZWRhYzIwOTgxYjciLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06YWRtaW4tdXNlciJ9.YINWjiLcEsw4nDK-snv1ujJnOEGWzdGaBpBinIfdWVItegJScElGRoBEiAlPyYdz-hvi1JnO-2QAc9BolEL8DoOgBullH3yViVeBBhwGOyzdr3_QEOzMkTPXlvPUV3VNrRo5aq9AGgq7J3RgMGnQDX9M1qpAJu2RZqqdpLjtthUALjVy0TKwdl2JeH0f4i67I4swllOW4syqZ7pvvy6wqWCwxORCzXZV5Tfx_B-jaXczjlUwoZoNKJuVTwcnm4mDUXQgzVW1tetdlKWMDUpiZNUAybwncVpkopK9E1dMPb-t6Q4V0pavRR0zi8VVfuFvkiAFYYmRvizM7DSdBJN8kQ");
-//        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-//        BearerToken.setApiKeyPrefix("Bearer");
-//
-//        AdmissionregistrationApi apiInstance = new AdmissionregistrationApi(defaultClient);
-//        try {
-//            System.out.println("Trying get API registration group");
-//            IoK8sApimachineryPkgApisMetaV1APIGroup result = apiInstance.getAdmissionregistrationAPIGroup();
-//            System.out.println(result);
-//        } catch (ApiException e) {
-//            System.err.println("Exception when calling AdmissionregistrationApi#getAdmissionregistrationAPIGroup");
-//            e.printStackTrace();
-//        }
-//
-//        CoreV1Api CoreapiInstance = new CoreV1Api(defaultClient);
-//        Boolean includeUninitialized = true;
-//        String pretty = null;
-//        String _continue = null;
-//        String fieldSelector = null;
-//        String labelSelector = null;
-//        Integer limit = 56;
-//        String resourceVersion = null;
-//        Integer timeoutSeconds = 56;
-//        Boolean watch = false;
-//        try {
-//            IoK8sApiCoreV1NodeList result = CoreapiInstance.listCoreV1Node(includeUninitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
-//            System.out.println(result.toString());
-//            Gson g = new Gson();
-//            String s = g.toJson(result);
-//            JSONObject reader = new JSONObject(s);
-//            return(reader);
-//
-//        } catch (Exception e) {
-//            System.err.println("Exception when calling CoreV1Api#listCoreV1Node");
-//            e.printStackTrace();
-//        }
-//        return new JSONObject();
-//    }
 
     @Override
     public void onBackPressed() {
