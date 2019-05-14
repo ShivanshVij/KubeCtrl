@@ -11,6 +11,7 @@ import io.swagger.client.auth.ApiKeyAuth;
 import io.swagger.client.model.IoK8sApiCoreV1NamespaceList;
 import io.swagger.client.model.IoK8sApiCoreV1NodeList;
 import io.swagger.client.model.IoK8sApiCoreV1PodList;
+import io.swagger.client.model.IoK8sApiCoreV1ServiceList;
 import io.swagger.client.model.IoK8sApimachineryPkgApisMetaV1APIGroup;
 
 public class Kubernetes {
@@ -175,6 +176,29 @@ public class Kubernetes {
         }
 
         return new IoK8sApiCoreV1PodList();
+
+    }
+
+    public IoK8sApiCoreV1ServiceList getServicesNamespaced(String namespace, Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
+
+        CoreV1Api apiInstance = new CoreV1Api(this.Client);
+
+        try{
+            if(this.DEBUG){
+                System.out.println("[Kubernetes] Trying Kubernetes.getServicesNamespaced()");
+            }
+            IoK8sApiCoreV1ServiceList result = apiInstance.listCoreV1NamespacedService(namespace, includeUninitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
+            if(this.DEBUG){
+                System.out.println(result);
+            }
+            return result;
+
+        } catch (ApiException e){
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.CoreV1Api.listCoreV1NamespacedService");
+            e.printStackTrace();
+        }
+
+        return new IoK8sApiCoreV1ServiceList();
 
     }
 

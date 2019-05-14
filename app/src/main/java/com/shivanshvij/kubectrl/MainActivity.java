@@ -3,6 +3,7 @@ package com.shivanshvij.kubectrl;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -35,16 +35,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Boolean FirstRun = false;
     private ArrayList<String> Namespaces;
 
-    AlphaAnimation inAnimation;
-    AlphaAnimation outAnimation;
-
-    FrameLayout progressBarHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -66,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String BEARER = this.ClusterPreferences.getString("BEARER", "");
 
         if(!HOSTPATH.equalsIgnoreCase("") && !BEARER.equalsIgnoreCase("")){
-            System.out.println(HOSTPATH);
-            System.out.println(BEARER);
             this.kubecontroller = new KubeController(HOSTPATH, BEARER, false);
 
             this.navigationView.setCheckedItem(R.id.nav_nodes);
@@ -87,16 +81,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             this.settingsClusterView();
         }
 
-//        progressBarHolder = (FrameLayout) findViewById(R.id.progressBarHolder);
-
         this.Namespaces = this.kubecontroller.getNamespaces_STRING();
-        Spinner namespaces_spinner = findViewById(R.id.namespaces_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, Namespaces);
-        namespaces_spinner.setAdapter(adapter);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, this.Namespaces);
 
-        namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        Spinner pods_namespaces_spinner = findViewById(R.id.pods_namespaces_spinner);
+        pods_namespaces_spinner.setAdapter(adapter);
+
+        pods_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+                progressOverlay.setVisibility(View.VISIBLE);
+
                 clearVisibility();
                 podsView();
 
@@ -107,19 +103,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        Spinner services_namespaces_spinner = findViewById(R.id.services_namespaces_spinner);
+        services_namespaces_spinner.setAdapter(adapter);
+
+        services_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+                progressOverlay.setVisibility(View.VISIBLE);
+
+                clearVisibility();
+                servicesView();
+
+                Toast.makeText(getApplicationContext(),"Services successfully retrieved",Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
     }
 
     private void clearVisibility(){
-        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
-        progressOverlay.setVisibility(View.VISIBLE);
-
         ListView item0 = findViewById(R.id.nodelist);
         LinearLayout item1 = findViewById(R.id.podslist_layout);
         LinearLayout item2 = findViewById(R.id.cluster_settings_layout);
+        LinearLayout item3 = findViewById(R.id.serviceslist_layout);
 
         item0.setVisibility(View.GONE);
         item1.setVisibility(View.GONE);
         item2.setVisibility(View.GONE);
+        item3.setVisibility(View.GONE);
     }
 
     private void nodeView(){
@@ -135,13 +149,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void podsView(){
-        Spinner namespaces_spinner = findViewById(R.id.namespaces_spinner);
-        ArrayList<String> PodString = this.kubecontroller.getPodsNamespaces_STRING(namespaces_spinner.getSelectedItem().toString());
+        Spinner pods_namespaces_spinner = findViewById(R.id.pods_namespaces_spinner);
+        ArrayList<String> PodString = this.kubecontroller.getPodsNamespaces_STRING(pods_namespaces_spinner.getSelectedItem().toString());
 
         ListView simpleList = findViewById(R.id.podslist);
         LinearLayout linearLayout = findViewById(R.id.podslist_layout);
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, PodString);
+        simpleList.setAdapter(arrayAdapter);
+        linearLayout.setVisibility(View.VISIBLE);
+
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.GONE);
+    }
+
+    private void servicesView(){
+        Spinner services_namespaces_spinner = findViewById(R.id.services_namespaces_spinner);
+        ArrayList<String> ServicesString = this.kubecontroller.getServicesNamespaces_STRING(services_namespaces_spinner.getSelectedItem().toString());
+
+        ListView simpleList = findViewById(R.id.serviceslist);
+        LinearLayout linearLayout = findViewById(R.id.serviceslist_layout);
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, ServicesString);
         simpleList.setAdapter(arrayAdapter);
         linearLayout.setVisibility(View.VISIBLE);
 
@@ -209,6 +238,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
 
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.VISIBLE);
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
@@ -226,7 +258,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_services) {
             this.clearVisibility();
-
+            this.servicesView();
+            Toast.makeText(getApplicationContext(),"Services successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_ingress) {
             this.clearVisibility();

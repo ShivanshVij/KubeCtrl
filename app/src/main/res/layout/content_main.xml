@@ -64,13 +64,32 @@
 
 
     <LinearLayout
+        android:id="@+id/serviceslist_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <Spinner
+            android:id="@+id/services_namespaces_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </Spinner>
+        <ListView
+            android:id="@+id/serviceslist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="16dp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/podslist_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal">
         <Spinner
-            android:id="@+id/namespaces_spinner"
+            android:id="@+id/pods_namespaces_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </Spinner>

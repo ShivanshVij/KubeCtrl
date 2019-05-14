@@ -13,6 +13,7 @@ import java.util.HashMap;
 import io.swagger.client.model.IoK8sApiCoreV1NamespaceList;
 import io.swagger.client.model.IoK8sApiCoreV1NodeList;
 import io.swagger.client.model.IoK8sApiCoreV1PodList;
+import io.swagger.client.model.IoK8sApiCoreV1ServiceList;
 
 public class KubeController {
     private Boolean DEBUG; // Class-global DEBUG variable to enable debug output
@@ -76,7 +77,6 @@ public class KubeController {
         return Nodes;
     }
 
-
     public ArrayList<String> getPodsAll_STRING(){
         ArrayList<String> Pods = new ArrayList<String>();
 
@@ -117,6 +117,26 @@ public class KubeController {
         return Pods;
     }
 
+    public ArrayList<String> getServicesNamespaces_STRING(String namespaces){
+        ArrayList<String> Services = new ArrayList<String>();
+
+        IoK8sApiCoreV1ServiceList ApiServices = this.kubernetes.getServicesNamespaced(namespaces,true,null,null, null, null, 56, null, this.timeout, false);
+
+        Gson GSONReader = new Gson();
+
+        try {
+            JSONObject JSONServices= new JSONObject(GSONReader.toJson(ApiServices));
+            JSONArray items = JSONServices.getJSONArray("items");
+            System.out.println(items);
+            for(Integer i = 0; i < items.length(); i = i+1){
+                Services.add(items.getJSONObject(i).getJSONObject("metadata").getString("name") + " : " + items.getJSONObject(i).getJSONObject("spec").getString("type"));
+            }
+        } catch (Exception e) {
+
+        }
+
+        return Services;
+    }
 
     public ArrayList<String> getNamespaces_STRING(){
         ArrayList<String> Namespaces = new ArrayList<String>();
