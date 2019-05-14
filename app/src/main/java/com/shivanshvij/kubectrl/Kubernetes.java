@@ -2,53 +2,52 @@ package com.shivanshvij.kubectrl;
 
 import android.os.StrictMode;
 
-import io.swagger.client.*;
-import io.swagger.client.api.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
+import io.swagger.client.ApiClient;
+import io.swagger.client.ApiException;
+import io.swagger.client.Configuration;
 import io.swagger.client.api.AdmissionregistrationApi;
-
-import javax.net.ssl.SSLContext;
-
-import java.util.*;
-import java.util.HashMap;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-
-import com.shivanshvij.kubectrl.SslUtils;
+import io.swagger.client.api.CoreV1Api;
+import io.swagger.client.auth.ApiKeyAuth;
+import io.swagger.client.model.IoK8sApiCoreV1NodeList;
+import io.swagger.client.model.IoK8sApiCoreV1PodList;
+import io.swagger.client.model.IoK8sApimachineryPkgApisMetaV1APIGroup;
 
 public class Kubernetes {
-    private Boolean DEBUG;
+    private Boolean DEBUG; // Class-global DEBUG variable to enable debug output
 
-    private ApiClient Client;
-    private ApiKeyAuth BearerToken;
+    private ApiClient Client; // Class-global ApiClient to use the same client by default for every class function
+    private ApiKeyAuth BearerToken; // Class-global APIKeyAuth token for authenticating the default client 
 
     Kubernetes(String HostPath, String APIKey, Boolean DEBUG){
         this.DEBUG = DEBUG;
 
+        // Set thread policy 
+        this.setThreadPolicy();
+
+        // Create default client
+        this.setClient(Configuration.getDefaultApiClient());
+
+        // Set the Host Path for the Kubernetes instance
+        this.setHostPath(HostPath);
+
+        // Get bearer token registration from the default client 
+        this.setBearerToken((ApiKeyAuth) this.Client.getAuthentication("BearerToken"));
+
+        this.setAPIKey(APIKey);
+    }
+
+    private void setThreadPolicy(){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         if(this.DEBUG){
-            System.out.println("Setting thread policy to strict");
+            System.out.println("[Kubernetes] Setting thread policy to strict");
         }
-
-        this.Client = Configuration.getDefaultApiClient();
-        this.Client.setVerifyingSsl(false);
-
-        this.setHostPath(HostPath);
-
-        this.BearerToken = (ApiKeyAuth) this.Client.getAuthentication("BearerToken");
-        this.BearerToken.setApiKeyPrefix("Bearer");
-        this.setAPIKey(APIKey);
     }
 
     public void setHostPath(String HostPath){
         this.Client.setBasePath(HostPath);
         if(this.DEBUG){
-            System.out.println("Host Path set to: " + this.getHostPath());
+            System.out.println("[Kubernetes] Host Path set to: " + this.getHostPath());
         }
     }
 
@@ -56,10 +55,21 @@ public class Kubernetes {
         return this.Client.getBasePath();
     }
 
-    public void setAPIKey(String APIKey){
+    private void setBearerToken(ApiKeyAuth BearerToken){
+        this.BearerToken = BearerToken;
+        if(this.DEBUG){
+            System.out.println("[Kubernetes] Default Bearer Token Set");
+        }
+        this.BearerToken.setApiKeyPrefix("Bearer");
+        if(this.DEBUG){
+            System.out.println("[Kubernetes] ApiKey Prefix set for Default Bearer Token");
+        }
+    }
+
+    private void setAPIKey(String APIKey){
         this.BearerToken.setApiKey(APIKey);
         if(this.DEBUG){
-            System.out.println("APIKey set to: " + this.getAPIKey());
+            System.out.println("[Kubernetes] APIKey set to: " + this.getAPIKey());
         }
     }
 
@@ -67,11 +77,26 @@ public class Kubernetes {
         return this.BearerToken.getApiKey();
     }
 
+    public void setClient(ApiClient Client){
+        this.Client = Client; 
+        if(this.DEBUG){
+            System.out.println("[Kubernetes] Default Client set");
+        }
+        this.Client.setVerifyingSsl(false);
+        if(this.DEBUG){
+            System.out.println("[Kubernetes] Removed SSL Verification on Default Client");
+        }
+    }
+
+    public ApiClient getClient(){
+        return this.Client;
+    }
+
     public IoK8sApimachineryPkgApisMetaV1APIGroup getAdmissionregistrationAPIGroup(){
         AdmissionregistrationApi apiInstance = new AdmissionregistrationApi(this.Client);
         try {
             if(this.DEBUG){
-                System.out.println("Trying Kubernetes.getAdmissionregistrationAPIGroup()");
+                System.out.println("[Kubernetes] Trying Kubernetes.getAdmissionregistrationAPIGroup()");
         }
             IoK8sApimachineryPkgApisMetaV1APIGroup result = apiInstance.getAdmissionregistrationAPIGroup();
             if(this.DEBUG){
@@ -79,7 +104,7 @@ public class Kubernetes {
             }
             return result;
         } catch (ApiException e) {
-            System.err.println("Exception when calling Kubernetes.AdmissionregistrationApi.getAdmissionregistrationAPIGroup");
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.AdmissionregistrationApi.getAdmissionregistrationAPIGroup");
             e.printStackTrace();
         }
         return new IoK8sApimachineryPkgApisMetaV1APIGroup();
@@ -90,7 +115,7 @@ public class Kubernetes {
 
         try{
             if(this.DEBUG){
-                System.out.println("Trying Kubernetes.getNodes()");
+                System.out.println("[Kubernetes] Trying Kubernetes.getNodes()");
             }
             IoK8sApiCoreV1NodeList result = apiInstance.listCoreV1Node(includeUninitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
             if(this.DEBUG){
@@ -99,11 +124,34 @@ public class Kubernetes {
             return result;
 
         } catch (ApiException e){
-            System.err.println("Exception when calling Kubernetes.CoreV1Api.listCoreV1Node");
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.CoreV1Api.listCoreV1Node");
             e.printStackTrace();
         }
 
         return new IoK8sApiCoreV1NodeList();
+    }
+
+    public IoK8sApiCoreV1PodList getPods(Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
+
+        CoreV1Api apiInstance = new CoreV1Api(this.Client);
+
+        try{
+            if(this.DEBUG){
+                System.out.println("[Kubernetes] Trying Kubernetes.getPods()");
+            }
+            IoK8sApiCoreV1PodList result = apiInstance.listCoreV1PodForAllNamespaces(_continue, fieldSelector, includeUninitialized, labelSelector, limit, pretty, resourceVersion, timeoutSeconds, watch);
+            if(this.DEBUG){
+                System.out.println(result);
+            }
+            return result;
+
+        } catch (ApiException e){
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.CoreV1Api.listCoreV1PodForAllNamespaces");
+            e.printStackTrace();
+        }
+
+        return new IoK8sApiCoreV1PodList();
+
     }
 
 }

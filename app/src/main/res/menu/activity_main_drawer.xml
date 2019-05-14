@@ -5,33 +5,45 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:id="@+id/nav_nodes"
+            android:icon="@drawable/ic_server_solid"
+            android:title="Nodes" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:id="@+id/nav_pods"
+            android:icon="@drawable/ic_box_open_solid"
+            android:title="Pods" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:id="@+id/nav_services"
+            android:icon="@drawable/ic_connectdevelop_brands"
+            android:title="Services" />
         <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
+            android:id="@+id/nav_ingress"
+            android:icon="@drawable/ic_network_wired_solid"
+            android:title="Ingress" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Storage">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/menu_share" />
+                android:id="@+id/nav_pv"
+                android:icon="@drawable/ic_hdd_solid"
+                android:title="Persistent Volumes" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/menu_send" />
+                android:id="@+id/nav_pvc"
+                android:icon="@drawable/ic_memory_solid"
+                android:title="Persistent Volume Claims" />
+        </menu>
+    </item>
+    <item android:title="Settings">
+        <menu>
+            <item
+                android:id="@+id/nav_app_settings"
+                android:icon="@drawable/ic_cogs_solid"
+                android:title="App Settings" />
+            <item
+                android:id="@+id/nav_cluster_settings"
+                android:icon="@drawable/ic_project_diagram_solid"
+                android:title="Cluster Settings" />
         </menu>
     </item>
 
