@@ -3,7 +3,6 @@ package com.shivanshvij.kubectrl;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,10 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,18 +27,24 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private KubeController kubecontroller;
-    SharedPreferences ClusterPreferences;
-    SharedPreferences.Editor ClusterPreferencesEditor;
+    private SharedPreferences ClusterPreferences;
+    private SharedPreferences.Editor ClusterPreferencesEditor;
 
-    NavigationView navigationView;
+    private NavigationView navigationView;
 
-    Boolean FirstRun = false;
+    private Boolean FirstRun = false;
+    private ArrayList<String> Namespaces;
+
+    AlphaAnimation inAnimation;
+    AlphaAnimation outAnimation;
+
+    FrameLayout progressBarHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -65,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             Toast.makeText(getApplicationContext(),"Getting Nodes",Toast.LENGTH_SHORT).show();
             this.clearVisibility();
+
             this.nodeView();
             Toast.makeText(getApplicationContext(),"Nodes successfully retrieved",Toast.LENGTH_LONG).show();
         }
@@ -72,17 +82,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             this.navigationView.setCheckedItem(R.id.nav_cluster_settings);
 
             this.FirstRun = true;
+            Toast.makeText(getApplicationContext(),"Please set host path and bearer token for cluster",Toast.LENGTH_LONG).show();
             this.clearVisibility();
             this.settingsClusterView();
         }
 
+//        progressBarHolder = (FrameLayout) findViewById(R.id.progressBarHolder);
+
+        this.Namespaces = this.kubecontroller.getNamespaces_STRING();
+        Spinner namespaces_spinner = findViewById(R.id.namespaces_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, Namespaces);
+        namespaces_spinner.setAdapter(adapter);
+
+        namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                clearVisibility();
+                podsView();
+
+                Toast.makeText(getApplicationContext(),"Pods successfully retrieved",Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
     }
 
-
     private void clearVisibility(){
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.VISIBLE);
+
         ListView item0 = findViewById(R.id.nodelist);
-        ListView item1 = findViewById(R.id.podslist);
+        LinearLayout item1 = findViewById(R.id.podslist_layout);
         LinearLayout item2 = findViewById(R.id.cluster_settings_layout);
 
         item0.setVisibility(View.GONE);
@@ -97,15 +129,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, NodeString);
         simpleList.setAdapter(arrayAdapter);
         simpleList.setVisibility(View.VISIBLE);
+
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.GONE);
     }
 
     private void podsView(){
-        ArrayList<String> PodString = this.kubecontroller.getPods_STRING();
+        Spinner namespaces_spinner = findViewById(R.id.namespaces_spinner);
+        ArrayList<String> PodString = this.kubecontroller.getPodsNamespaces_STRING(namespaces_spinner.getSelectedItem().toString());
 
         ListView simpleList = findViewById(R.id.podslist);
+        LinearLayout linearLayout = findViewById(R.id.podslist_layout);
+
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, PodString);
         simpleList.setAdapter(arrayAdapter);
-        simpleList.setVisibility(View.VISIBLE);
+        linearLayout.setVisibility(View.VISIBLE);
+
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.GONE);
     }
 
     private void settingsClusterView(){
@@ -122,11 +163,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             bearer_token.setText(BEARER);
         }
         else{
-            hostname.setText("NOTSAVED");
-            bearer_token.setText("NOTSAVED");
+            hostname.setText("https://");
+            bearer_token.setText("");
         }
 
         linearLayout.setVisibility(View.VISIBLE);
+
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.GONE);
     }
 
     public void saveSettingsClusterView(View view){
@@ -164,16 +208,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
         int id = item.getItemId();
 
         if (id == R.id.nav_nodes) {
-            Toast.makeText(getApplicationContext(),"Getting Nodes",Toast.LENGTH_SHORT).show();
             this.clearVisibility();
             this.nodeView();
             Toast.makeText(getApplicationContext(),"Nodes successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_pods) {
-            Toast.makeText(getApplicationContext(),"Getting Pods",Toast.LENGTH_SHORT).show();
             this.clearVisibility();
             this.podsView();
             Toast.makeText(getApplicationContext(),"Pods successfully retrieved",Toast.LENGTH_LONG).show();
@@ -206,8 +252,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 }

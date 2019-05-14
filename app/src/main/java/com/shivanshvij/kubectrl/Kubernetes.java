@@ -8,6 +8,7 @@ import io.swagger.client.Configuration;
 import io.swagger.client.api.AdmissionregistrationApi;
 import io.swagger.client.api.CoreV1Api;
 import io.swagger.client.auth.ApiKeyAuth;
+import io.swagger.client.model.IoK8sApiCoreV1NamespaceList;
 import io.swagger.client.model.IoK8sApiCoreV1NodeList;
 import io.swagger.client.model.IoK8sApiCoreV1PodList;
 import io.swagger.client.model.IoK8sApimachineryPkgApisMetaV1APIGroup;
@@ -131,13 +132,13 @@ public class Kubernetes {
         return new IoK8sApiCoreV1NodeList();
     }
 
-    public IoK8sApiCoreV1PodList getPods(Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
+    public IoK8sApiCoreV1PodList getPodsAll(Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
 
         CoreV1Api apiInstance = new CoreV1Api(this.Client);
 
         try{
             if(this.DEBUG){
-                System.out.println("[Kubernetes] Trying Kubernetes.getPods()");
+                System.out.println("[Kubernetes] Trying Kubernetes.getPodsAll()");
             }
             IoK8sApiCoreV1PodList result = apiInstance.listCoreV1PodForAllNamespaces(_continue, fieldSelector, includeUninitialized, labelSelector, limit, pretty, resourceVersion, timeoutSeconds, watch);
             if(this.DEBUG){
@@ -151,6 +152,52 @@ public class Kubernetes {
         }
 
         return new IoK8sApiCoreV1PodList();
+
+    }
+
+    public IoK8sApiCoreV1PodList getPodsNamespaced(String namespace, Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
+
+        CoreV1Api apiInstance = new CoreV1Api(this.Client);
+
+        try{
+            if(this.DEBUG){
+                System.out.println("[Kubernetes] Trying Kubernetes.getPodsNamespaced()");
+            }
+            IoK8sApiCoreV1PodList result = apiInstance.listCoreV1NamespacedPod(namespace, includeUninitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
+            if(this.DEBUG){
+                System.out.println(result);
+            }
+            return result;
+
+        } catch (ApiException e){
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.CoreV1Api.listCoreV1NamespacedPod");
+            e.printStackTrace();
+        }
+
+        return new IoK8sApiCoreV1PodList();
+
+    }
+
+    public IoK8sApiCoreV1NamespaceList getNamespaces(Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
+
+        CoreV1Api apiInstance = new CoreV1Api(this.Client);
+
+        try{
+            if(this.DEBUG){
+                System.out.println("[Kubernetes] Trying Kubernetes.getNamespaces()");
+            }
+            IoK8sApiCoreV1NamespaceList result = apiInstance.listCoreV1Namespace(includeUninitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
+            if(this.DEBUG){
+                System.out.println(result);
+            }
+            return result;
+
+        } catch (ApiException e){
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.CoreV1Api.listCoreV1Namespace");
+            e.printStackTrace();
+        }
+
+        return new IoK8sApiCoreV1NamespaceList();
 
     }
 
