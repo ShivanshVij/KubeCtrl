@@ -71,6 +71,65 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             this.nodeView();
             Toast.makeText(getApplicationContext(),"Nodes successfully retrieved",Toast.LENGTH_LONG).show();
+            this.Namespaces = this.kubecontroller.getNamespaces_STRING();
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, this.Namespaces);
+
+            Spinner pods_namespaces_spinner = findViewById(R.id.pods_namespaces_spinner);
+            pods_namespaces_spinner.setAdapter(adapter);
+
+            pods_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+                    progressOverlay.setVisibility(View.VISIBLE);
+
+                    clearVisibility();
+                    podsView();
+
+                    Toast.makeText(getApplicationContext(),"Pods successfully retrieved",Toast.LENGTH_LONG).show();
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
+            Spinner services_namespaces_spinner = findViewById(R.id.services_namespaces_spinner);
+            services_namespaces_spinner.setAdapter(adapter);
+
+            services_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+                    progressOverlay.setVisibility(View.VISIBLE);
+
+                    clearVisibility();
+                    servicesView();
+
+                    Toast.makeText(getApplicationContext(),"Services successfully retrieved",Toast.LENGTH_LONG).show();
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
+            Spinner ingress_namespaces_spinner = findViewById(R.id.ingress_namespaces_spinner);
+            ingress_namespaces_spinner.setAdapter(adapter);
+
+            ingress_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+                    progressOverlay.setVisibility(View.VISIBLE);
+
+                    clearVisibility();
+                    ingressView();
+
+                    Toast.makeText(getApplicationContext(),"Ingress successfully retrieved",Toast.LENGTH_LONG).show();
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
         }
         else{
             this.navigationView.setCheckedItem(R.id.nav_cluster_settings);
@@ -81,66 +140,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             this.settingsClusterView();
         }
 
-        this.Namespaces = this.kubecontroller.getNamespaces_STRING();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, this.Namespaces);
-
-        Spinner pods_namespaces_spinner = findViewById(R.id.pods_namespaces_spinner);
-        pods_namespaces_spinner.setAdapter(adapter);
-
-        pods_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
-                progressOverlay.setVisibility(View.VISIBLE);
-
-                clearVisibility();
-                podsView();
-
-                Toast.makeText(getApplicationContext(),"Pods successfully retrieved",Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        Spinner services_namespaces_spinner = findViewById(R.id.services_namespaces_spinner);
-        services_namespaces_spinner.setAdapter(adapter);
-
-        services_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
-                progressOverlay.setVisibility(View.VISIBLE);
-
-                clearVisibility();
-                servicesView();
-
-                Toast.makeText(getApplicationContext(),"Services successfully retrieved",Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        Spinner ingress_namespaces_spinner = findViewById(R.id.ingress_namespaces_spinner);
-        ingress_namespaces_spinner.setAdapter(adapter);
-
-        ingress_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
-                progressOverlay.setVisibility(View.VISIBLE);
-
-                clearVisibility();
-                ingressView();
-
-                Toast.makeText(getApplicationContext(),"Ingress successfully retrieved",Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
     }
 
     private void clearVisibility(){
@@ -149,12 +148,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LinearLayout item2 = findViewById(R.id.cluster_settings_layout);
         LinearLayout item3 = findViewById(R.id.serviceslist_layout);
         LinearLayout item4 = findViewById(R.id.ingresslist_layout);
+        ListView item5 = findViewById(R.id.pvlist);
 
         item0.setVisibility(View.GONE);
         item1.setVisibility(View.GONE);
         item2.setVisibility(View.GONE);
         item3.setVisibility(View.GONE);
         item4.setVisibility(View.GONE);
+        item5.setVisibility(View.GONE);
 
         return;
     }
@@ -210,6 +211,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, IngressString);
         simpleList.setAdapter(arrayAdapter);
         linearLayout.setVisibility(View.VISIBLE);
+
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.GONE);
+    }
+
+    private void PVView(){
+        ArrayList<String> PVString = this.kubecontroller.getPersistentVolumes_STRING();
+
+        ListView simpleList = findViewById(R.id.pvlist);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, PVString);
+        simpleList.setAdapter(arrayAdapter);
+        simpleList.setVisibility(View.VISIBLE);
 
         FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
         progressOverlay.setVisibility(View.GONE);
@@ -284,43 +297,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_nodes) {
+            this.navigationView.setCheckedItem(R.id.nav_nodes);
             this.clearVisibility();
             this.nodeView();
             Toast.makeText(getApplicationContext(),"Nodes successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_pods) {
+            this.navigationView.setCheckedItem(R.id.nav_pods);
             this.clearVisibility();
             this.podsView();
             Toast.makeText(getApplicationContext(),"Pods successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_services) {
+            this.navigationView.setCheckedItem(R.id.nav_services);
             this.clearVisibility();
             this.servicesView();
             Toast.makeText(getApplicationContext(),"Services successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_ingress) {
+            this.navigationView.setCheckedItem(R.id.nav_ingress);
             this.clearVisibility();
             this.ingressView();
             Toast.makeText(getApplicationContext(),"Ingress successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_pv) {
+            this.navigationView.setCheckedItem(R.id.nav_pv);
             this.clearVisibility();
-
+            this.PVView();
+            Toast.makeText(getApplicationContext(),"Persistent Volumes successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_pvc) {
+            this.navigationView.setCheckedItem(R.id.nav_pvc);
             this.clearVisibility();
-
-
         }
         else if (id == R.id.nav_app_settings){
+            this.navigationView.setCheckedItem(R.id.nav_app_settings);
             this.clearVisibility();
-
-
         }
         else if (id == R.id.nav_cluster_settings){
+            this.navigationView.setCheckedItem(R.id.nav_cluster_settings);
             this.clearVisibility();
             this.settingsClusterView();
-
         }
 
         return true;

@@ -62,6 +62,13 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="16dp" />
 
+    <ListView
+        android:id="@+id/pvlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="16dp" />
+
 
     <LinearLayout
         android:id="@+id/serviceslist_layout"

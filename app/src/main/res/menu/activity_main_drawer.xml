@@ -20,31 +20,24 @@
             android:id="@+id/nav_ingress"
             android:icon="@drawable/ic_network_wired_solid"
             android:title="Ingress" />
-    </group>
 
-    <item android:title="Storage">
-        <menu>
-            <item
-                android:id="@+id/nav_pv"
-                android:icon="@drawable/ic_hdd_solid"
-                android:title="Persistent Volumes" />
-            <item
-                android:id="@+id/nav_pvc"
-                android:icon="@drawable/ic_memory_solid"
-                android:title="Persistent Volume Claims" />
-        </menu>
-    </item>
-    <item android:title="Settings">
-        <menu>
-            <item
-                android:id="@+id/nav_app_settings"
-                android:icon="@drawable/ic_cogs_solid"
-                android:title="App Settings" />
-            <item
-                android:id="@+id/nav_cluster_settings"
-                android:icon="@drawable/ic_project_diagram_solid"
-                android:title="Cluster Settings" />
-        </menu>
-    </item>
+        <item
+            android:id="@+id/nav_pv"
+            android:icon="@drawable/ic_hdd_solid"
+            android:title="Persistent Volumes" />
+        <item
+            android:id="@+id/nav_pvc"
+            android:icon="@drawable/ic_memory_solid"
+            android:title="Persistent Volume Claims" />
+
+        <item
+            android:id="@+id/nav_app_settings"
+            android:icon="@drawable/ic_cogs_solid"
+            android:title="App Settings" />
+        <item
+            android:id="@+id/nav_cluster_settings"
+            android:icon="@drawable/ic_project_diagram_solid"
+            android:title="Cluster Settings" />
+    </group>
 
 </menu>

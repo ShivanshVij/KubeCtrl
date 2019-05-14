@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import io.swagger.client.model.IoK8sApiCoreV1NamespaceList;
 import io.swagger.client.model.IoK8sApiCoreV1NodeList;
+import io.swagger.client.model.IoK8sApiCoreV1PersistentVolumeList;
 import io.swagger.client.model.IoK8sApiCoreV1PodList;
 import io.swagger.client.model.IoK8sApiCoreV1ServiceList;
 import io.swagger.client.model.IoK8sApiExtensionsV1beta1IngressList;
@@ -21,7 +22,7 @@ public class KubeController {
 
     private Kubernetes kubernetes; // Class-global Kubernetes Control instance for the wrapper
 
-    private Integer timeout = 200;
+    private Integer timeout = 1000;
 
     KubeController(String HostPath, String APIKey, Boolean DEBUG){
         this.DEBUG = DEBUG;
@@ -156,6 +157,27 @@ public class KubeController {
         }
 
         return Ingress;
+    }
+
+    public ArrayList<String> getPersistentVolumes_STRING(){
+        ArrayList<String> PV = new ArrayList<String>();
+
+        IoK8sApiCoreV1PersistentVolumeList ApiPV = this.kubernetes.getPersistentVolumes(true,null,null, null, null, 56, null, this.timeout, false);
+
+        Gson GSONReader = new Gson();
+
+        try {
+            JSONObject JSONPV= new JSONObject(GSONReader.toJson(ApiPV));
+            JSONArray items = JSONPV.getJSONArray("items");
+            System.out.println(items);
+            for(Integer i = 0; i < items.length(); i = i+1){
+                PV.add(items.getJSONObject(i).getJSONObject("metadata").getString("name") + " : " + items.getJSONObject(i).getJSONObject("spec").getJSONObject("capacity").getString("storage"));
+            }
+        } catch (Exception e) {
+
+        }
+
+        return PV;
     }
 
     public ArrayList<String> getNamespaces_STRING(){

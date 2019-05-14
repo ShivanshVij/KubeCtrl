@@ -11,6 +11,7 @@ import io.swagger.client.api.ExtensionsV1beta1Api;
 import io.swagger.client.auth.ApiKeyAuth;
 import io.swagger.client.model.IoK8sApiCoreV1NamespaceList;
 import io.swagger.client.model.IoK8sApiCoreV1NodeList;
+import io.swagger.client.model.IoK8sApiCoreV1PersistentVolumeList;
 import io.swagger.client.model.IoK8sApiCoreV1PodList;
 import io.swagger.client.model.IoK8sApiCoreV1ServiceList;
 import io.swagger.client.model.IoK8sApiExtensionsV1beta1IngressList;
@@ -90,6 +91,10 @@ public class Kubernetes {
         if(this.DEBUG){
             System.out.println("[Kubernetes] Removed SSL Verification on Default Client");
         }
+
+        this.Client.setConnectTimeout(60000);
+        this.Client.setReadTimeout(60000);
+        this.Client.setWriteTimeout(60000);
     }
 
     public ApiClient getClient(){
@@ -201,6 +206,29 @@ public class Kubernetes {
         }
 
         return new IoK8sApiCoreV1ServiceList();
+
+    }
+
+    public IoK8sApiCoreV1PersistentVolumeList getPersistentVolumes(Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
+
+        CoreV1Api apiInstance = new CoreV1Api(this.Client);
+
+        try{
+            if(this.DEBUG){
+                System.out.println("[Kubernetes] Trying Kubernetes.getPersistentVolumes()");
+            }
+            IoK8sApiCoreV1PersistentVolumeList result = apiInstance.listCoreV1PersistentVolume(includeUninitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
+            if(this.DEBUG){
+                System.out.println(result);
+            }
+            return result;
+
+        } catch (ApiException e){
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.CoreV1Api.listCoreV1PersistentVolume");
+            e.printStackTrace();
+        }
+
+        return new IoK8sApiCoreV1PersistentVolumeList();
 
     }
 
