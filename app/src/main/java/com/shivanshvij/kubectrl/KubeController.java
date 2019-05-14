@@ -14,6 +14,7 @@ import io.swagger.client.model.IoK8sApiCoreV1NamespaceList;
 import io.swagger.client.model.IoK8sApiCoreV1NodeList;
 import io.swagger.client.model.IoK8sApiCoreV1PodList;
 import io.swagger.client.model.IoK8sApiCoreV1ServiceList;
+import io.swagger.client.model.IoK8sApiExtensionsV1beta1IngressList;
 
 public class KubeController {
     private Boolean DEBUG; // Class-global DEBUG variable to enable debug output
@@ -127,7 +128,6 @@ public class KubeController {
         try {
             JSONObject JSONServices= new JSONObject(GSONReader.toJson(ApiServices));
             JSONArray items = JSONServices.getJSONArray("items");
-            System.out.println(items);
             for(Integer i = 0; i < items.length(); i = i+1){
                 Services.add(items.getJSONObject(i).getJSONObject("metadata").getString("name") + " : " + items.getJSONObject(i).getJSONObject("spec").getString("type"));
             }
@@ -136,6 +136,26 @@ public class KubeController {
         }
 
         return Services;
+    }
+
+    public ArrayList<String> getIngressNamespaces_STRING(String namespaces){
+        ArrayList<String> Ingress = new ArrayList<String>();
+
+        IoK8sApiExtensionsV1beta1IngressList ApiIngress = this.kubernetes.getIngressNamespaced(namespaces,true,null,null, null, null, 56, null, this.timeout, false);
+
+        Gson GSONReader = new Gson();
+
+        try {
+            JSONObject JSONIngress= new JSONObject(GSONReader.toJson(ApiIngress));
+            JSONArray items = JSONIngress.getJSONArray("items");
+            for(Integer i = 0; i < items.length(); i = i+1){
+                Ingress.add(items.getJSONObject(i).getJSONObject("metadata").getString("name"));
+            }
+        } catch (Exception e) {
+
+        }
+
+        return Ingress;
     }
 
     public ArrayList<String> getNamespaces_STRING(){

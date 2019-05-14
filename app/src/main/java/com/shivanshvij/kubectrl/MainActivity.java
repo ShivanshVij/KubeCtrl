@@ -122,6 +122,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        Spinner ingress_namespaces_spinner = findViewById(R.id.ingress_namespaces_spinner);
+        ingress_namespaces_spinner.setAdapter(adapter);
+
+        ingress_namespaces_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+                progressOverlay.setVisibility(View.VISIBLE);
+
+                clearVisibility();
+                ingressView();
+
+                Toast.makeText(getApplicationContext(),"Ingress successfully retrieved",Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
     }
 
     private void clearVisibility(){
@@ -129,11 +148,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LinearLayout item1 = findViewById(R.id.podslist_layout);
         LinearLayout item2 = findViewById(R.id.cluster_settings_layout);
         LinearLayout item3 = findViewById(R.id.serviceslist_layout);
+        LinearLayout item4 = findViewById(R.id.ingresslist_layout);
 
         item0.setVisibility(View.GONE);
         item1.setVisibility(View.GONE);
         item2.setVisibility(View.GONE);
         item3.setVisibility(View.GONE);
+        item4.setVisibility(View.GONE);
+
+        return;
     }
 
     private void nodeView(){
@@ -171,6 +194,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LinearLayout linearLayout = findViewById(R.id.serviceslist_layout);
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, ServicesString);
+        simpleList.setAdapter(arrayAdapter);
+        linearLayout.setVisibility(View.VISIBLE);
+
+        FrameLayout progressOverlay = findViewById(R.id.progress_overlay);
+        progressOverlay.setVisibility(View.GONE);
+    }
+
+    private void ingressView(){
+        Spinner ingress_namespaces_spinner = findViewById(R.id.ingress_namespaces_spinner);
+        ArrayList<String> IngressString = this.kubecontroller.getIngressNamespaces_STRING(ingress_namespaces_spinner.getSelectedItem().toString());
+        ListView simpleList = findViewById(R.id.ingresslist);
+        LinearLayout linearLayout = findViewById(R.id.ingresslist_layout);
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview, R.id.textView, IngressString);
         simpleList.setAdapter(arrayAdapter);
         linearLayout.setVisibility(View.VISIBLE);
 
@@ -263,7 +300,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_ingress) {
             this.clearVisibility();
-
+            this.ingressView();
+            Toast.makeText(getApplicationContext(),"Ingress successfully retrieved",Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_pv) {
             this.clearVisibility();

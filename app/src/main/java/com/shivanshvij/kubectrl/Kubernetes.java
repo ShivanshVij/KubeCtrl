@@ -7,11 +7,13 @@ import io.swagger.client.ApiException;
 import io.swagger.client.Configuration;
 import io.swagger.client.api.AdmissionregistrationApi;
 import io.swagger.client.api.CoreV1Api;
+import io.swagger.client.api.ExtensionsV1beta1Api;
 import io.swagger.client.auth.ApiKeyAuth;
 import io.swagger.client.model.IoK8sApiCoreV1NamespaceList;
 import io.swagger.client.model.IoK8sApiCoreV1NodeList;
 import io.swagger.client.model.IoK8sApiCoreV1PodList;
 import io.swagger.client.model.IoK8sApiCoreV1ServiceList;
+import io.swagger.client.model.IoK8sApiExtensionsV1beta1IngressList;
 import io.swagger.client.model.IoK8sApimachineryPkgApisMetaV1APIGroup;
 
 public class Kubernetes {
@@ -199,6 +201,29 @@ public class Kubernetes {
         }
 
         return new IoK8sApiCoreV1ServiceList();
+
+    }
+
+    public IoK8sApiExtensionsV1beta1IngressList getIngressNamespaced(String namespace, Boolean includeUninitialized, String pretty, String _continue, String fieldSelector, String labelSelector, Integer limit, String resourceVersion, Integer timeoutSeconds, Boolean watch){
+
+        ExtensionsV1beta1Api apiInstance = new ExtensionsV1beta1Api(this.Client);
+
+        try{
+            if(this.DEBUG){
+                System.out.println("[Kubernetes] Trying Kubernetes.getIngressNamespaced()");
+            }
+            IoK8sApiExtensionsV1beta1IngressList result = apiInstance.listExtensionsV1beta1NamespacedIngress(namespace, includeUninitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
+            if(this.DEBUG){
+                System.out.println(result);
+            }
+            return result;
+
+        } catch (ApiException e){
+            System.err.println("[Kubernetes] Exception when calling Kubernetes.ExtensionsV1beta1Api.listExtensionsV1beta1NamespacedIngress");
+            e.printStackTrace();
+        }
+
+        return new IoK8sApiExtensionsV1beta1IngressList();
 
     }
 
